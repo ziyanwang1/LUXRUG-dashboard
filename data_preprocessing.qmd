@@ -1,0 +1,156 @@
+---
+title: "Sales Data Dashboard Data Preprocessing"
+subtitle: "Sta 523 - Final Project"
+format: 
+  html:
+    self-contained: true
+author:
+- Ziyan Wang
+---
+```{r, echo=FALSE}
+# setup
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+```{r, echo=FALSE}
+# reads the datasets provided by client
+raw_oct <- read.delim("data/order_202410.txt")
+raw_nov <- read.delim("data/order_202411.txt")
+
+# combine two into one
+raw_combined <- rbind(raw_oct, raw_nov)
+```
+
+```{r, echo=FALSE}
+# this code chunk creates a tidied version of the sales data provided
+# date format
+raw_combined_tidy <- raw_combined |>
+  mutate(
+   purchase.date = as.POSIXct(
+     purchase.date, 
+     format="%Y-%m-%dT%H:%M:%S", 
+     tz="UTC" 
+   )
+  ) |>
+  
+  # in the data provided, one SKU is incorrectly named, need to rename
+  # G24267-1A should be G24268-1A 
+  mutate(
+    sku = str_replace(sku, "G24267-1A", "G24268-1A")
+  ) |>
+  # extract item size
+  mutate(
+    size = regmatches(
+      sku, 
+      regexpr("[0-9]x[0-9]+", sku)
+    ),
+    # extract item pattern
+    pattern = regmatches(
+      sku, 
+      regexpr("[A-Z]\\d+", sku)
+    ),
+    color = regmatches(
+      sku, 
+      regexpr("[A-Z][a-z]+ ?[A-Z]?[a-z]+", sku)
+    )
+  ) |>
+  
+  # removing columns that are not needed in the analysis
+  select(
+    -c(
+      merchant.order.id,
+      fulfillment.channel, 
+      order.channel, 
+      gift.wrap.price, 
+      gift.wrap.tax, 
+      purchase.order.number, 
+      price.designation,
+      signature.confirmation.recommended,
+      url,
+      item.tax,
+      shipping.tax,
+      shipping.price,
+      ship.promotion.discount
+    )
+  ) |>
+  mutate( # compute revenue
+    revenue = item.price - coalesce(item.promotion.discount, 0) # no discount
+  ) |>
+  # only look at orders for the US, sold through Amazon and confirmed items
+  filter(
+    item.status != "Cancelled", # filter confirmed items (i.e. not Cancelled)
+    sales.channel == "Amazon.com",
+    ship.country == "US"
+  )
+```
+
+```{r}
+# since for this project, we are focusing on the aggregated information about 
+# the revenue, we perform further preprocessing to create a dataframe that 
+# can directly be used in the Shiny App
+
+# read the sku reference table provided by client
+sku_ref <- read.csv("data/sku_chart.csv")
+
+# extract pattern, size, color
+sku_ref <- sku_ref |>
+  mutate(
+    size = regmatches(
+      sku, 
+      regexpr("[0-9]x[0-9]+", sku)
+    ),
+    # extract item pattern
+    pattern = regmatches(
+      sku, 
+      regexpr("[A-Z]\\d+", sku)
+    ),
+    color = regmatches(
+      sku, 
+      regexpr("[A-Z][a-z]+ ?[A-Z]?[a-z]+", sku)
+    )
+  ) |>
+  select(-sku)
+
+# create df of all combinations of state and product
+state_patterns_colors <- cross_join(
+      sku_ref,
+      as.data.frame(state.abb)
+    )
+
+# compute total revenue based on the tidied sales data
+revenue_data <- raw_combined_tidy |>
+  mutate(
+    date = as.Date(format(purchase.date, "%Y%m%d"), "%Y%m%d")
+  ) |>
+  rename(state.abb = ship.state) |>
+  group_by( # group by attributes that will be used in dashboard
+    date, pattern, color, size, state.abb 
+  ) |>
+  summarise(
+    total_revenue = sum(item.price), .groups = "drop"
+  ) 
+
+# date-state-product combination
+all_dates_patterns <- crossing(
+      date = unique(revenue_data$date),
+      state_patterns_colors
+    )
+
+# left join date-state-product combination to make sure each product-state
+# combination has an entry for all dates
+revenue_data <- left_join(
+  all_dates_patterns, 
+  revenue_data, 
+  by = join_by(date, pattern, color, size, state.abb),
+  relationship = "many-to-many"
+) |>
+  mutate(
+    total_revenue = coalesce(total_revenue, 0) # if NA replace by 0
+  )
+
+# save file to use in dashboard building
+saveRDS(revenue_data, "data/revenue_summary_tidied.rds")
+```
