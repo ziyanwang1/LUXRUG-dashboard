@@ -17,8 +17,8 @@ library(stringr)
 
 ```{r, echo=FALSE}
 # reads the datasets provided by client
-raw_oct <- read.delim("data/order_202410.txt")
-raw_nov <- read.delim("data/order_202411.txt")
+raw_oct <- read.delim("www/order_202410.txt")
+raw_nov <- read.delim("www/order_202411.txt")
 
 # combine two into one
 raw_combined <- rbind(raw_oct, raw_nov)
@@ -93,7 +93,7 @@ raw_combined_tidy <- raw_combined |>
 # can directly be used in the Shiny App
 
 # read the sku reference table provided by client
-sku_ref <- read.csv("data/sku_chart.csv")
+sku_ref <- read.csv("www/sku_chart.csv")
 
 # extract pattern, size, color
 sku_ref <- sku_ref |>
@@ -152,5 +152,5 @@ revenue_data <- left_join(
   )
 
 # save file to use in dashboard building
-saveRDS(revenue_data, "data/revenue_summary_tidied.rds")
+saveRDS(revenue_data, "www/revenue_summary_tidied.rds")
 ```
