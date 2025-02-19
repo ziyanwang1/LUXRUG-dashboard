@@ -30,9 +30,8 @@ install.packages(c("shiny", "bslib", "hrbrthemes", "statebins", "forcats", "RCol
 
 ## Running Locally
 1. Clone the repository or download the project files to your local machine.
-2. Open the R project file `LUXRUG_dashboard.Rproj`.
-3. Run the `project.R` file in RStudio or a similar R environment to launch the Shiny app.
-4. The dashboard will be hosted locally on your default browser at `http://127.0.0.1:XXXX` where `XXXX` is the port number provided in the R console.
+2. Run the `project.R` file in RStudio or a similar R environment to launch the Shiny app.
+3. The dashboard will be hosted locally on your default browser at `http://127.0.0.1:XXXX` where `XXXX` is the port number provided in the R console.
 
 ## Accessing Remotely
 The dashboard is deployed on ShinyApps.io and can be accessed via the following URL: https://ziyanw.shinyapps.io/LUXRUG_dashboard/ This link will take you directly to the dashboard, where you can interact with the data visualizations remotely.
