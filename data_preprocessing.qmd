@@ -1,6 +1,6 @@
 ---
-title: "Sales Data Dashboard Data Preprocessing"
-subtitle: "Sta 523 - Final Project"
+title: "Luxrug Sales Data Dashboard Data Preprocessing"
+subtitle: ""
 format: 
   html:
     self-contained: true
@@ -18,23 +18,36 @@ library(stringr)
 
 ```{r, echo=FALSE}
 # reads the datasets provided by client
-raw_oct <- read.delim("www/order_202410.txt")
-raw_nov <- read.delim("www/order_202411.txt")
+raw_2410 <- read.delim("www/order_202410.txt")
+raw_2411 <- read.delim("www/order_202411.txt")
+raw_2412 <- read.delim("www/order_202412.txt")
+raw_2501 <- read.delim("www/order_202501.txt")
+raw_2502 <- read.delim("www/order_202502.txt")
 
 # combine two into one
-raw_combined <- rbind(raw_oct, raw_nov)
+raw_combined <- rbind(raw_2410, raw_2411, raw_2412, raw_2501, raw_2502)
 ```
 
 ```{r, echo=FALSE}
-# this code chunk creates a tidied version of the sales data provided
-# date format
 raw_combined_tidy <- raw_combined |>
+  # this code chunk creates a tidied version of the sales data provided
+  # date format
   mutate(
    purchase.date = as.POSIXct(
      purchase.date, 
      format="%Y-%m-%dT%H:%M:%S", 
      tz="UTC" 
    )
+  ) |>
+  
+  mutate( # compute revenue
+    revenue = item.price - coalesce(item.promotion.discount, 0) # no discount
+  ) |>
+  # only look at orders for the US, sold through Amazon and confirmed items
+  filter(
+    item.status != "Cancelled", # filter confirmed items (i.e. not Cancelled)
+    sales.channel == "Amazon.com",
+    ship.country == "US"
   ) |>
   
   # in the data provided, one SKU is incorrectly named, need to rename
@@ -76,15 +89,6 @@ raw_combined_tidy <- raw_combined |>
       shipping.price,
       ship.promotion.discount
     )
-  ) |>
-  mutate( # compute revenue
-    revenue = item.price - coalesce(item.promotion.discount, 0) # no discount
-  ) |>
-  # only look at orders for the US, sold through Amazon and confirmed items
-  filter(
-    item.status != "Cancelled", # filter confirmed items (i.e. not Cancelled)
-    sales.channel == "Amazon.com",
-    ship.country == "US"
   )
 ```
 
