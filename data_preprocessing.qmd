@@ -6,6 +6,7 @@ format:
     self-contained: true
 author:
 - Ziyan Wang
+- Jiashen Wang
 ---
 ```{r, echo=FALSE}
 # setup
