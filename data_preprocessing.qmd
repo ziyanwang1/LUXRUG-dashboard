@@ -17,16 +17,17 @@ library(stringr)
 ```
 
 ```{r, echo=FALSE}
-# read datasets
+# read monthly orders datasets
 raw_2410 <- read.delim("www/order_202410.txt")
 raw_2411 <- read.delim("www/order_202411.txt")
 raw_2412 <- read.delim("www/order_202412.txt")
 raw_2501 <- read.delim("www/order_202501.txt")
 raw_2502 <- read.delim("www/order_202502.txt")
 raw_2503 <- read.delim("www/order_202503.txt")
-
 # combine two into one
 raw_combined <- rbind(raw_2410, raw_2411, raw_2412, raw_2501, raw_2502, raw_2503)
+
+# read 
 ```
 
 ```{r, echo=FALSE}
@@ -103,7 +104,8 @@ orders_combined <- raw_combined |>
   )
 
 colnames(orders_combined) = c("order_id", "date", "status", "asin", "quantity", 
-                              "price", "discount", "city", "state", "zip")
+                              "price", "discount", "city", "state", "zip", 
+                              "revenue", "size", "pattern", "color")
 ```
 
 ```{r}
@@ -173,3 +175,5 @@ revenue_data <- left_join(
 # save file to use in dashboard building
 saveRDS(revenue_data, "www/revenue_summary_tidied.rds")
 ```
+
+
