@@ -237,7 +237,6 @@ ui <- page_sidebar(
 server <- function(input, output) {
   # process rds file to get the needed data for plotting
   data <- eventReactive( input$p1_generate, {
-    print(input$sales_switch)
     validate(
       need(
         !is.na(input$start_date) && !is.na(input$end_date), 
@@ -258,8 +257,6 @@ server <- function(input, output) {
         select(-c("total_revenue")) |>
         rename("total_revenue" = total_sales)
     }
-    
-    print(mean(plot_data$total_revenue))
     plot_data
   })
   

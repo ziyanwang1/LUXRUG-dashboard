@@ -169,7 +169,7 @@ revenue_data <- left_join(
 ) |>
   mutate(
     total_revenue = coalesce(total_revenue, 0), # if NA replace by 0
-    total_sales = coalesce(total_revenue, 0)
+    total_sales = coalesce(total_sales, 0)
   )
 
 # save file to use in dashboard building
