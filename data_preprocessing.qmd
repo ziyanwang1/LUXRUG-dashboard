@@ -149,7 +149,8 @@ revenue_data <- orders_combined |>
     date, pattern, color, size, state.abb 
   ) |>
   summarise(
-    total_revenue = sum(price), .groups = "drop"
+    total_revenue = sum(price),
+    total_sales = sum(quantity)
   ) 
 
 # date-state-product combination
@@ -167,11 +168,10 @@ revenue_data <- left_join(
   relationship = "many-to-many"
 ) |>
   mutate(
-    total_revenue = coalesce(total_revenue, 0) # if NA replace by 0
+    total_revenue = coalesce(total_revenue, 0), # if NA replace by 0
+    total_sales = coalesce(total_revenue, 0)
   )
 
 # save file to use in dashboard building
 saveRDS(revenue_data, "www/revenue_summary_tidied.rds")
 ```
-
-
