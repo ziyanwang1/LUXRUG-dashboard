@@ -225,6 +225,12 @@ ui <- page_sidebar(
           card_header("Reasons for Return",
                       class = "bg-danger"),
           card_body(plotOutput(outputId = ""))
+        ),
+        card(
+          max_height = 600,
+          card_header("Return Keywords",
+                      class = "bg-danger"),
+          card_body(plotOutput(outputId = ""))
         )
       )
     )
