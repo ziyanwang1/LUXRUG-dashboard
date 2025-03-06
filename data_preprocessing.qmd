@@ -175,3 +175,18 @@ revenue_data <- left_join(
 # save file to use in dashboard building
 saveRDS(revenue_data, "www/revenue_summary_tidied.rds")
 ```
+
+```{r}
+# load, clean, and store returns data
+returns <- read.csv("www/退货.csv")
+returns_cols = c("return.date", "order.id","asin", "detailed.disposition", 
+                "reason", "customer.comments")
+returns = returns[,returns_cols]
+colnames(returns) = c("date", "order_id", "asin", "disposition", 
+                  "reason", "comments")
+# format date
+returns <- returns |>
+  mutate(date = as.POSIXct(date, format="%Y-%m-%dT%H:%M:%S", tz="UTC"))
+saveRDS(returns, "www/returns.rds")
+```
+

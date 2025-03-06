@@ -80,7 +80,7 @@ ui <- page_sidebar(
           )
         ),
         
-        # plot for revenue over time, viewed by patter
+        # plot for revenue over time, viewed by pattern
         card(
           max_height = 600,
           card_header(
@@ -209,6 +209,23 @@ ui <- page_sidebar(
             )
           )
         )  
+      )
+    ),
+    
+    # panel 4 Returns 
+    nav_panel(
+      "Returns",
+      # main content
+      layout_column_wrap(
+        # column format: 1:1
+        style = css(grid_template_columns = "1fr 1fr"),
+        # bar plot showing return reasons
+        card(
+          max_height = 600,
+          card_header("Reasons for Return",
+                      class = "bg-danger"),
+          card_body(plotOutput(outputId = ""))
+        )
       )
     )
   ),
