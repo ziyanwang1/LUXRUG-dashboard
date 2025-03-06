@@ -30,7 +30,7 @@ raw_combined <- rbind(raw_2410, raw_2411, raw_2412, raw_2501, raw_2502, raw_2503
 ```
 
 ```{r, echo=FALSE}
-raw_combined_tidy <- raw_combined |>
+orders_combined <- raw_combined |>
   # this code chunk creates a tidied version of the sales data provided
   # date format
   mutate(
@@ -76,9 +76,17 @@ raw_combined_tidy <- raw_combined |>
   # removing columns that are not needed in the analysis
   select(
     -c(
+      last.updated.date,
+      sku,
       merchant.order.id,
       fulfillment.channel, 
+      sales.channel,
       order.channel, 
+      ship.service.level,
+      product.name,
+      item.status,
+      currency,
+      ship.country,
       gift.wrap.price, 
       gift.wrap.tax, 
       purchase.order.number, 
@@ -88,9 +96,14 @@ raw_combined_tidy <- raw_combined |>
       item.tax,
       shipping.tax,
       shipping.price,
-      ship.promotion.discount
+      ship.promotion.discount,
+      promotion.ids,
+      is.business.order
     )
   )
+
+colnames(orders_combined) = c("order_id", "date", "status", "asin", "quantity", 
+                              "price", "discount", "city", "state", "zip")
 ```
 
 ```{r}
@@ -127,16 +140,16 @@ state_patterns_colors <- cross_join(
     )
 
 # compute total revenue based on the tidied sales data
-revenue_data <- raw_combined_tidy |>
+revenue_data <- orders_combined |>
   mutate(
-    date = as.Date(format(purchase.date, "%Y%m%d"), "%Y%m%d")
+    date = as.Date(format(date, "%Y%m%d"), "%Y%m%d")
   ) |>
-  rename(state.abb = ship.state) |>
+  rename(state.abb = state) |>
   group_by( # group by attributes that will be used in dashboard
     date, pattern, color, size, state.abb 
   ) |>
   summarise(
-    total_revenue = sum(item.price), .groups = "drop"
+    total_revenue = sum(price), .groups = "drop"
   ) 
 
 # date-state-product combination
