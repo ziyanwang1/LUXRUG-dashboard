@@ -236,7 +236,25 @@ ui <- page_sidebar(
           card_body(plotOutput(outputId = ""))
         )
       )
+    ),
+    
+    # panel 5 Reviews 
+    nav_panel(
+      "Reviews",
+      # main content
+      layout_column_wrap(
+        # column format: 1:1
+        style = css(grid_template_columns = "1fr 1fr"),
+        # bar plot showing return reasons
+        card(
+          max_height = 600,
+          card_header("Ratings Distribution",
+                      class = "bg-danger"),
+          card_body(plotOutput(outputId = ""))
+        )
+      )
     )
+    
   ),
 
   # title of the dashboard

@@ -186,7 +186,7 @@ colnames(returns) = c("date", "order_id", "asin", "disposition",
                   "reason", "comments")
 # format date
 returns <- returns |>
-  mutate(date = as.POSIXct(date, format="%Y-%m-%dT%H:%M:%S", tz="UTC"))
+  mutate(date = as.POSIXct(date, format="%Y-%m-%d", tz="UTC"))
 saveRDS(returns, "www/returns.rds")
 ```
 
