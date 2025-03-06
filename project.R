@@ -36,6 +36,8 @@ ui <- page_sidebar(
         max = max(revenue$date), 
         value = max(revenue$date)
       ),
+      # switch between revenue and sales
+      input_switch("sales_switch", "View Sales"),
       # query button that updates the dashboard
       actionButton(
         "p1_generate",
@@ -239,6 +241,7 @@ server <- function(input, output) {
   ####### tab 1  #######
   # tab 1 main line plot
   output$p1_revenue <- renderPlot({
+    
     plot_data <- data() |>
       group_by(date) |>
       summarise(total_revenue = sum(total_revenue), .groups = 'drop')
