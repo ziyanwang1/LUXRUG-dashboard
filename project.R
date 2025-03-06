@@ -237,6 +237,7 @@ ui <- page_sidebar(
 server <- function(input, output) {
   # process rds file to get the needed data for plotting
   data <- eventReactive( input$p1_generate, {
+    print(input$sales_switch)
     validate(
       need(
         !is.na(input$start_date) && !is.na(input$end_date), 
@@ -251,14 +252,20 @@ server <- function(input, output) {
     plot_data <- revenue |>
       filter(
         date >= input$start_date & date <= input$end_date
-      ) 
+      )
+    if(isTRUE(input$sales_switch)){
+      plot_data <- plot_data |>
+        select(-c("total_revenue")) |>
+        rename("total_revenue" = total_sales)
+    }
+    
+    print(mean(plot_data$total_revenue))
     plot_data
   })
   
   ####### tab 1  #######
   # tab 1 main line plot
   output$p1_revenue <- renderPlot({
-    
     plot_data <- data() |>
       group_by(date) |>
       summarise(total_revenue = sum(total_revenue), .groups = 'drop')
@@ -268,7 +275,7 @@ server <- function(input, output) {
       geom_point() +
       labs(
         x = "Date",
-        y = "Total Revenue",
+        y = "Total Revenue"
       ) +
       theme_minimal() +
       theme(
@@ -309,7 +316,7 @@ server <- function(input, output) {
         ) +
         labs(
           x = "Date",
-          y = "Total Revenue",
+          y = "Total Revenue"
         ) +
         facet_wrap(~pattern)
   }) |>
@@ -344,7 +351,7 @@ server <- function(input, output) {
       scale_fill_brewer(palette = "Set2") + # customized palatte for consistency
       labs(
         x = "Pattern",
-        y = "Total Revenue",
+        y = "Total Revenue"
       ) +
       theme_minimal() +
       theme(
