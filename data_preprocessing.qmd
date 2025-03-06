@@ -26,8 +26,6 @@ raw_2502 <- read.delim("www/order_202502.txt")
 raw_2503 <- read.delim("www/order_202503.txt")
 # combine two into one
 raw_combined <- rbind(raw_2410, raw_2411, raw_2412, raw_2501, raw_2502, raw_2503)
-
-# read 
 ```
 
 ```{r, echo=FALSE}
