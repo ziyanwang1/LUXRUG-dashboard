@@ -190,3 +190,12 @@ returns <- returns |>
 saveRDS(returns, "www/returns.rds")
 ```
 
+```{r}
+# load, clean, and store review data
+reviews <- read.csv("www/reviews.csv", header = T)
+# remove empty rows
+reviews <- reviews[!is.na(reviews$rating), ]
+# format date
+reviews$date <- as.Date(reviews$date, format = "%m-%d-%Y")
+saveRDS(returns, "www/reviews.rds")
+```

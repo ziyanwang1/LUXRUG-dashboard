@@ -11,7 +11,10 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
+# Load Data
 revenue <- readRDS("www/revenue_summary_tidied.rds")
+returns <- readRDS("www/returns.rds")
+reviews <- readRDS("www/reviews.rds")
 
 ui <- page_sidebar(
   # main sidebar for filtering date, across all nav panels
