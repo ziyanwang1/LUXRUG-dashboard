@@ -136,7 +136,8 @@ revenue_data <- raw_combined_tidy |>
     date, pattern, color, size, state.abb 
   ) |>
   summarise(
-    total_revenue = sum(item.price), .groups = "drop"
+    total_revenue = sum(item.price),
+    total_sales = sum(quantity)
   ) 
 
 # date-state-product combination
@@ -154,7 +155,8 @@ revenue_data <- left_join(
   relationship = "many-to-many"
 ) |>
   mutate(
-    total_revenue = coalesce(total_revenue, 0) # if NA replace by 0
+    total_revenue = coalesce(total_revenue, 0), # if NA replace by 0
+    total_sales = coalesce(total_revenue, 0)
   )
 
 # save file to use in dashboard building
